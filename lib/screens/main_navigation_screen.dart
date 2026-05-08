@@ -57,7 +57,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
             _NavItem(
               label: 'Chat',
-              iconPath: AppAssets.chatbotWhite,
+              iconPath: AppAssets.chatbot,
               isActive: currentIndex == 1,
               onTap: () => changePage(1),
             ),
@@ -113,9 +113,8 @@ class _NavItem extends StatelessWidget {
             Image.asset(
               iconPath,
               height: 32,
-              color: color,
               errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.circle, color: color, size: 30);
+                return Icon(Icons.smart_toy, color: color, size: 32);
               },
             ),
             const SizedBox(height: 6),
