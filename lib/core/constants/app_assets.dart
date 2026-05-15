@@ -17,4 +17,5 @@ class AppAssets {
   static const String cameraIcon = 'assets/images/ic 20 (2).png';
   static const String galleryIcon = 'assets/images/ic 20 (3).png';
   static const String folderIcon = 'assets/images/ic 20 (4).png';
+  static const String mapPreview = 'assets/images/map_preview.png';
 }
