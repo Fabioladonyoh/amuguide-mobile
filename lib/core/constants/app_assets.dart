@@ -18,4 +18,8 @@ class AppAssets {
   static const String galleryIcon = 'assets/images/ic 20 (3).png';
   static const String folderIcon = 'assets/images/ic 20 (4).png';
   static const String mapPreview = 'assets/images/map_preview.png';
+  static const String card = 'assets/images/carte.png';
+  static const String amuCard = 'assets/images/amu_card.png';
+static const String money = 'assets/images/money.png';
+
 }

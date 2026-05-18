@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../verification/verification_screen.dart';
+import '../procedures/procedures_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -282,7 +283,14 @@ class HomeScreen extends StatelessWidget {
                       child: _featureCard(
                         image: AppAssets.procedure,
                         title: 'Procédures',
-                        onTap: () {},
+                        onTap: () {
+                           Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const ProceduresScreen(),
+    ),
+  );
+                        },
                       ),
                     ),
                   ],
