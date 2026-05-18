@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
+import '../verification/verification_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -54,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              _featuresSection(),
+              _featuresSection(context),
               const SizedBox(height: 34),
               _structuresTitle(),
               const SizedBox(height: 16),
@@ -222,7 +223,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _featuresSection() {
+  Widget _featuresSection(BuildContext context) {
     return SizedBox(
       height: 210,
       child: Stack(
@@ -254,7 +255,14 @@ class HomeScreen extends StatelessWidget {
                       child: _featureCard(
                         image: AppAssets.stethoscope,
                         title: 'Vérifier',
-                        onTap: () {},
+                        onTap: () {
+                           Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const VerificationScreen(),
+      ),
+    );
+                        },
                       ),
                     ),
                   ],
