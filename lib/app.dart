@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
 
-import 'screens/auth/register_screen.dart';
+import 'screens/auth/login_screen.dart';
 
 class AmuGuideApp extends StatelessWidget {
   const AmuGuideApp({super.key});
@@ -12,7 +12,7 @@ class AmuGuideApp extends StatelessWidget {
       title: 'AMU-Guide',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const RegisterScreen(),
+      home: const LoginScreen(),
     );
   }
 }
