@@ -20,6 +20,7 @@ class HomeScreen extends StatelessWidget {
 
 import 'package:flutter/material.dart';
 
+import '../../screens/structures/structures_screen.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../verification/verification_screen.dart';
@@ -275,7 +276,14 @@ class HomeScreen extends StatelessWidget {
                       child: _featureCard(
                         image: AppAssets.cross,
                         title: 'Structures',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => const StructuresScreen(),
+  ),
+);
+                        },
                       ),
                     ),
                     const SizedBox(width: 26),

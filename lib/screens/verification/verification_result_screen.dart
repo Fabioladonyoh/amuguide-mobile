@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/prestation.dart';
 import 'widgets/verification_result_card.dart';
 
 class VerificationResultScreen extends StatelessWidget {
-  const VerificationResultScreen({super.key});
+  final Prestation prestation;
+
+  const VerificationResultScreen({
+    super.key,
+    required this.prestation,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,23 +23,17 @@ class VerificationResultScreen extends StatelessWidget {
             children: [
               _header(context),
               const SizedBox(height: 150),
-              const VerificationResultCard(),
+              VerificationResultCard(prestation: prestation),
               const SizedBox(height: 105),
               const Text(
                 'Besoin de plus d’informations ?',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 38,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 38),
               ),
               const SizedBox(height: 42),
               const Text(
                 'Poser Une Question Au Chatbot',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 30),
               ),
               const SizedBox(height: 42),
               _chatbotButton(context),
@@ -53,11 +53,7 @@ class VerificationResultScreen extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(
-              Icons.arrow_back,
-              size: 38,
-              color: Colors.black,
-            ),
+            child: const Icon(Icons.arrow_back, size: 38),
           ),
           const Spacer(),
           Container(
@@ -68,10 +64,7 @@ class VerificationResultScreen extends StatelessWidget {
             ),
             child: const Text(
               'Vérifier un soin',
-              style: TextStyle(
-                fontSize: 28,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 28),
             ),
           ),
           const Spacer(),
