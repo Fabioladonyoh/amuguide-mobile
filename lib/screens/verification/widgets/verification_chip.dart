@@ -6,29 +6,25 @@ class VerificationChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const VerificationChip({
-    super.key,
-    required this.label,
-    required this.onTap,
-  });
+  const VerificationChip({super.key, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 56,
-        padding: const EdgeInsets.symmetric(horizontal: 28),
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: AppColors.blue,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
           child: Text(
             label,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
           ),

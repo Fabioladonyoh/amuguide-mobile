@@ -9,10 +9,7 @@ import 'widgets/verification_chip.dart';
 class VerificationScreen extends StatelessWidget {
   const VerificationScreen({super.key});
 
-  Future<void> searchAndOpen(
-    BuildContext context,
-    String motCle,
-  ) async {
+  Future<void> searchAndOpen(BuildContext context, String motCle) async {
     final provider = context.read<VerificationProvider>();
 
     await provider.search(motCle);
@@ -21,17 +18,14 @@ class VerificationScreen extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => VerificationResultScreen(
-            prestation: provider.prestations.first,
-          ),
+          builder: (_) =>
+              VerificationResultScreen(prestation: provider.prestations.first),
         ),
       );
     } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Aucun soin trouvé'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Aucun soin trouve')));
     }
   }
 
@@ -42,92 +36,96 @@ class VerificationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            _header(context),
-            const SizedBox(height: 52),
-            const Text(
-              'Vérifiez la prise en charge',
-              style: TextStyle(fontSize: 36),
-            ),
-            const SizedBox(height: 22),
-            const Text(
-              'Entrez un soin pour savoir s’il est couvert par l’AMU',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22),
-            ),
-            const SizedBox(height: 58),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 34),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  VerificationChip(
-                    label: 'Scanner',
-                    onTap: () => searchAndOpen(context, 'scanner'),
-                  ),
-                  VerificationChip(
-                    label: 'Analyse',
-                    onTap: () => searchAndOpen(context, 'analyse'),
-                  ),
-                  VerificationChip(
-                    label: 'Consultation',
-                    onTap: () => searchAndOpen(context, 'consultation'),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 40),
+          child: Column(
+            children: [
+              _header(context),
+              const SizedBox(height: 28),
+              const Text(
+                'Verifiez la prise en charge',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22),
               ),
-            ),
-
-            const SizedBox(height: 82),
-
-            if (provider.isLoading)
-              const CircularProgressIndicator()
-            else
-            Container(
-  height: 84,
-  margin: const EdgeInsets.symmetric(horizontal: 38),
-  padding: const EdgeInsets.symmetric(horizontal: 34),
-  decoration: BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(18),
-    boxShadow: const [
-      BoxShadow(
-        color: Color(0x20000000),
-        blurRadius: 14,
-        offset: Offset(0, 6),
-      ),
-    ],
-  ),
-  child: Row(
-    children: [
-      const Icon(Icons.search, size: 44, color: Colors.black),
-      const SizedBox(width: 22),
-      Expanded(
-        child: TextField(
-          onSubmitted: (value) {
-            if (value.trim().isNotEmpty) {
-              searchAndOpen(context, value.trim());
-            }
-          },
-          decoration: const InputDecoration(
-            hintText: 'Ex: scanner, consultation, analyse...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(
-              fontSize: 22,
-              color: Colors.grey,
-            ),
+              const SizedBox(height: 14),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 36),
+                child: Text(
+                  'Entrez un soin pour savoir s il est couvert par l AMU',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+              ),
+              const SizedBox(height: 28),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    VerificationChip(
+                      label: 'Scanner',
+                      onTap: () => searchAndOpen(context, 'scanner'),
+                    ),
+                    VerificationChip(
+                      label: 'Analyse',
+                      onTap: () => searchAndOpen(context, 'analyse'),
+                    ),
+                    VerificationChip(
+                      label: 'Consultation',
+                      onTap: () => searchAndOpen(context, 'consultation'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 54),
+              if (provider.isLoading)
+                const CircularProgressIndicator()
+              else
+                Container(
+                  height: 54,
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x20000000),
+                        blurRadius: 14,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, size: 26, color: Colors.black),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextField(
+                          onSubmitted: (value) {
+                            if (value.trim().isNotEmpty) {
+                              searchAndOpen(context, value.trim());
+                            }
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Ex: scanner, consultation, analyse...',
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
-          style: const TextStyle(
-            fontSize: 22,
-            color: Colors.black,
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-          ],
         ),
       ),
     );
@@ -135,25 +133,25 @@ class VerificationScreen extends StatelessWidget {
 
   Widget _header(BuildContext context) {
     return Container(
-      height: 110,
+      height: 74,
       color: const Color(0xFFF3F3F3),
-      padding: const EdgeInsets.symmetric(horizontal: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, size: 38),
+            child: const Icon(Icons.arrow_back, size: 26),
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
-              'Vérifier un soin',
-              style: TextStyle(fontSize: 28),
+              'Verifier un soin',
+              style: TextStyle(fontSize: 16),
             ),
           ),
           const Spacer(),

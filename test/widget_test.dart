@@ -1,30 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:amuguide_mobile/app.dart';
+import 'package:amuguide_mobile/providers/auth_provider.dart';
+import 'package:amuguide_mobile/providers/chatbot_provider.dart';
+import 'package:amuguide_mobile/providers/demande_provider.dart';
+import 'package:amuguide_mobile/providers/prestation_provider.dart';
+import 'package:amuguide_mobile/providers/profile_provider.dart';
+import 'package:amuguide_mobile/providers/structure_provider.dart';
+import 'package:amuguide_mobile/providers/verification_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:amuguide_mobile/main.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('AMU Guide app builds', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => ProfileProvider()),
+          ChangeNotifierProvider(create: (_) => DemandeProvider()),
+          ChangeNotifierProvider(create: (_) => ChatbotProvider()),
+          ChangeNotifierProvider(create: (_) => PrestationProvider()),
+          ChangeNotifierProvider(create: (_) => VerificationProvider()),
+          ChangeNotifierProvider(create: (_) => StructureProvider()),
+        ],
+        child: const AmuGuideApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(AmuGuideApp), findsOneWidget);
   });
 }

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({super.key});
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  const SearchBarWidget({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +26,20 @@ class SearchBarWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.search, size: 42, color: Colors.black),
-          SizedBox(width: 18),
+          const Icon(Icons.search, size: 42, color: Colors.black),
+          const SizedBox(width: 18),
           Expanded(
-            child: Text(
-              'Rechercher un hôpital ou une pharmacie...',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey,
+            child: TextField(
+              controller: controller,
+              onChanged: onChanged,
+              decoration: const InputDecoration(
+                hintText: 'Rechercher un hopital ou une pharmacie...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(fontSize: 20, color: Colors.grey),
               ),
+              style: const TextStyle(fontSize: 20, color: Colors.black),
             ),
           ),
         ],

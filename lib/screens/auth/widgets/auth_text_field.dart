@@ -4,12 +4,18 @@ class AuthTextField extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final bool obscureText;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
+  final VoidCallback? onToggleVisibility;
 
   const AuthTextField({
     super.key,
     required this.hintText,
     required this.icon,
     this.obscureText = false,
+    this.controller,
+    this.keyboardType,
+    this.onToggleVisibility,
   });
 
   @override
@@ -27,23 +33,25 @@ class AuthTextField extends StatelessWidget {
           const SizedBox(width: 22),
           Expanded(
             child: TextField(
+              controller: controller,
               obscureText: obscureText,
+              keyboardType: keyboardType,
               decoration: InputDecoration(
                 hintText: hintText,
                 border: InputBorder.none,
-                hintStyle: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 25,
-                ),
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 25),
               ),
               style: const TextStyle(fontSize: 22),
             ),
           ),
-          if (obscureText)
-            const Icon(
-              Icons.visibility_off,
-              size: 34,
-              color: Colors.black87,
+          if (onToggleVisibility != null)
+            IconButton(
+              onPressed: onToggleVisibility,
+              icon: Icon(
+                obscureText ? Icons.visibility_off : Icons.visibility,
+                size: 34,
+                color: Colors.black87,
+              ),
             ),
         ],
       ),

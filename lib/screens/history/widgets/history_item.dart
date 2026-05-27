@@ -13,14 +13,17 @@ class HistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 22),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Text(
               title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Colors.black,
               ),
@@ -29,7 +32,7 @@ class HistoryItem extends StatelessWidget {
           Text(
             time,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 14,
               color: Colors.black,
             ),
           ),

@@ -15,12 +15,23 @@ class StructuresScreen extends StatefulWidget {
 
 class _StructuresScreenState extends State<StructuresScreen> {
   String selectedFilter = 'TOUS';
+  String searchQuery = '';
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
       context.read<StructureProvider>().loadStructures();
     });
   }
@@ -29,11 +40,21 @@ class _StructuresScreenState extends State<StructuresScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<StructureProvider>();
 
-    final filteredStructures = selectedFilter == 'TOUS'
+    final byType = selectedFilter == 'TOUS'
         ? provider.structures
         : provider.structures
-            .where((structure) => structure.type == selectedFilter)
-            .toList();
+              .where((structure) => structure.type == selectedFilter)
+              .toList();
+    final normalizedQuery = searchQuery.trim().toLowerCase();
+    final filteredStructures = normalizedQuery.isEmpty
+        ? byType
+        : byType.where((structure) {
+            return structure.nom.toLowerCase().contains(normalizedQuery) ||
+                structure.type.toLowerCase().contains(normalizedQuery) ||
+                structure.ville.toLowerCase().contains(normalizedQuery) ||
+                structure.adresse.toLowerCase().contains(normalizedQuery) ||
+                structure.specialites.toLowerCase().contains(normalizedQuery);
+          }).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F3F3),
@@ -42,9 +63,12 @@ class _StructuresScreenState extends State<StructuresScreen> {
           children: [
             const SizedBox(height: 28),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: SearchBarWidget(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: SearchBarWidget(
+                controller: searchController,
+                onChanged: (value) => setState(() => searchQuery = value),
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -113,15 +137,11 @@ class _StructuresScreenState extends State<StructuresScreen> {
               child: Builder(
                 builder: (_) {
                   if (provider.isLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (provider.errorMessage != null) {
-                    return Center(
-                      child: Text(provider.errorMessage!),
-                    );
+                    return Center(child: Text(provider.errorMessage!));
                   }
 
                   if (filteredStructures.isEmpty) {
@@ -131,16 +151,14 @@ class _StructuresScreenState extends State<StructuresScreen> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 36),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     itemCount: filteredStructures.length,
                     itemBuilder: (context, index) {
                       final structure = filteredStructures[index];
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 22),
-                        child: StructureCard(
-                          structure: structure,
-                        ),
+                        child: StructureCard(structure: structure),
                       );
                     },
                   );

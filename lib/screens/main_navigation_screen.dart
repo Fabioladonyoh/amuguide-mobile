@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_assets.dart';
+import '../providers/auth_provider.dart';
+import '../providers/demande_provider.dart';
+import '../providers/profile_provider.dart';
 
 import 'home/home_screen.dart';
 import 'chatbot/chatbot_screen.dart';
@@ -19,22 +23,35 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int currentIndex = 0;
 
-  final List<Widget> pages = const [
-    HomeScreen(),
-    ChatbotScreen(),
-    StructuresScreen(),
-    HistoryScreen(),
-    ProfileScreen(),
-  ];
-
   void changePage(int index) {
     setState(() {
       currentIndex = index;
     });
+
+    final auth = context.read<AuthProvider>();
+    if (index == 3) {
+      context.read<DemandeProvider>().loadDemandes(auth.token);
+    }
+    if (index == 4) {
+      context.read<ProfileProvider>().loadProfile(
+        token: auth.token,
+        nom: auth.nom,
+        prenom: auth.prenom,
+        identifiant: auth.identifiant,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      const HomeScreen(),
+      const ChatbotScreen(),
+      const StructuresScreen(),
+      HistoryScreen(onBack: () => changePage(0)),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: Container(

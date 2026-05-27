@@ -1,77 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/demande_response.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/demande_provider.dart';
+import '../chatbot/chatbot_screen.dart';
 import 'widgets/history_card.dart';
 import 'widgets/history_item.dart';
 
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+class HistoryScreen extends StatefulWidget {
+  final VoidCallback? onBack;
+
+  const HistoryScreen({super.key, this.onBack});
+
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final token = context.read<AuthProvider>().token;
+      context.read<DemandeProvider>().loadDemandes(token);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DemandeProvider>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 130),
+          padding: const EdgeInsets.only(bottom: 125),
           child: Column(
             children: [
               _header(context),
-              const SizedBox(height: 36),
-              _titleSection(),
-              const SizedBox(height: 34),
-              HistoryCard(
-                items: const [
-                  HistoryItem(
-                    title: 'Scanner abdominal',
-                    time: 'Il y a 5 min',
-                  ),
-                  HistoryItem(
-                    title: 'Consultation générale',
-                    time: 'Il y a 10 min',
-                  ),
-                  HistoryItem(
-                    title: 'Consultation générale',
-                    time: 'Il y a 10 min',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 0),
-              HistoryCard(
-                items: const [
-                  HistoryItem(
-                    title: 'Pharmacie proche',
-                    time: 'Hier',
-                  ),
-                  HistoryItem(
-                    title: 'Analyse sanguine',
-                    time: 'Il y a 1 jours',
-                  ),
-                  HistoryItem(
-                    title: 'Carte assurance',
-                    time: 'Il y a 2 jours',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 72),
+              _titleSection(context),
+              _historyContent(provider),
+              const SizedBox(height: 28),
               const Text(
-                'Besoin d’aide ?',
-                style: TextStyle(
-                  fontSize: 36,
-                  color: Colors.black,
-                ),
+                'Besoin d aide ?',
+                style: TextStyle(fontSize: 24, color: Colors.black),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 14),
               const Text(
                 'Poser Une Question Au Chatbot',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 18, color: Colors.black),
               ),
-              const SizedBox(height: 30),
-              _chatbotButton(),
+              const SizedBox(height: 18),
+              _chatbotButton(context),
             ],
           ),
         ),
@@ -79,132 +62,173 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
+  Widget _historyContent(DemandeProvider provider) {
+    if (provider.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 30),
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (provider.demandes.isEmpty) {
+      return const HistoryCard(
+        items: [
+          HistoryItem(title: 'Aucune recherche recente', time: ''),
+        ],
+      );
+    }
+
+    final recent = provider.demandes.take(6).toList();
+    final firstGroup = recent.take(3).map(_toHistoryItem).toList();
+    final secondGroup = recent.skip(3).map(_toHistoryItem).toList();
+
+    return Column(
+      children: [
+        HistoryCard(items: firstGroup),
+        if (secondGroup.isNotEmpty) HistoryCard(items: secondGroup),
+      ],
+    );
+  }
+
+  HistoryItem _toHistoryItem(DemandeResponse demande) {
+    return HistoryItem(title: demande.title, time: demande.relativeTime);
+  }
+
   Widget _header(BuildContext context) {
     return Container(
-      height: 110,
+      height: 74,
       color: const Color(0xFFF3F3F3),
-      padding: const EdgeInsets.symmetric(horizontal: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(
-              Icons.arrow_back,
-              size: 38,
-              color: Colors.black,
-            ),
+            onTap: () {
+              if (widget.onBack != null) {
+                widget.onBack!();
+              } else if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+            },
+            child: const Icon(Icons.arrow_back, size: 26, color: Colors.black),
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(7),
             ),
             child: const Text(
               'Historique',
-              style: TextStyle(
-                fontSize: 28,
-                color: Colors.black,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.black),
             ),
           ),
           const Spacer(),
-          const SizedBox(width: 38),
+          const SizedBox(width: 26),
         ],
       ),
     );
   }
 
-  Widget _titleSection() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+  Widget _titleSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(22, 18, 22, 20),
       child: Column(
         children: [
           Align(
             alignment: Alignment.centerRight,
-            child: Icon(
-              Icons.delete_outline,
-              size: 42,
-              color: Colors.black,
+            child: GestureDetector(
+              onTap: () {
+                context.read<DemandeProvider>().clearDemandesOnly();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Historique efface.')),
+                );
+              },
+              child: const Icon(
+                Icons.delete_outline,
+                size: 26,
+                color: Colors.black,
+              ),
             ),
           ),
-          SizedBox(height: 6),
-          Text(
-            'Vos dernières recherches',
+          const SizedBox(height: 2),
+          const Text(
+            'Vos dernieres recherches',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 36,
-              color: Colors.black,
-            ),
+            style: TextStyle(fontSize: 20, color: Colors.black),
           ),
-          SizedBox(height: 18),
-          Text(
-            'Retrouvez vos questions et demandes récentes',
+          const SizedBox(height: 12),
+          const Text(
+            'Retrouvez vos questions et demandes recentes',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 22,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.black87),
           ),
         ],
       ),
     );
   }
 
-  Widget _chatbotButton() {
+  Widget _chatbotButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Container(
-        height: 110,
-        decoration: BoxDecoration(
-          color: AppColors.blue,
-          borderRadius: BorderRadius.circular(55),
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 24),
-            Container(
-              width: 76,
-              height: 76,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Image.asset(
-                  AppAssets.chatbotSmall,
-                  width: 38,
-                  height: 38,
-                ),
-              ),
-            ),
-            const SizedBox(width: 18),
-            const Expanded(
-              child: Text(
-                'Posez Votre Question Au\nChatbot',
-                style: TextStyle(
+      padding: const EdgeInsets.symmetric(horizontal: 22),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+          );
+        },
+        child: Container(
+          height: 58,
+          decoration: BoxDecoration(
+            color: AppColors.blue,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 10),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  fontSize: 24,
-                  height: 1.1,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Image.asset(
+                    AppAssets.chatbotSmall,
+                    width: 23,
+                    height: 23,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              width: 76,
-              height: 76,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Posez Votre Question Au Chatbot',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    height: 1.1,
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.keyboard_double_arrow_right,
-                color: AppColors.blue,
-                size: 34,
+              Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.keyboard_double_arrow_right,
+                  color: AppColors.blue,
+                  size: 25,
+                ),
               ),
-            ),
-            const SizedBox(width: 24),
-          ],
+              const SizedBox(width: 10),
+            ],
+          ),
         ),
       ),
     );

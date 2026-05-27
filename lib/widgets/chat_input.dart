@@ -5,11 +5,19 @@ import '../core/constants/app_colors.dart';
 class ChatInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
+  final VoidCallback? onCamera;
+  final VoidCallback? onGallery;
+  final VoidCallback? onFile;
+  final VoidCallback? onVoice;
 
   const ChatInput({
     super.key,
     required this.controller,
     required this.onSend,
+    this.onCamera,
+    this.onGallery,
+    this.onFile,
+    this.onVoice,
   });
 
   @override
@@ -20,13 +28,11 @@ class ChatInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
         children: [
-          const Icon(Icons.camera_alt_outlined, size: 32),
+          _IconAction(icon: Icons.camera_alt_outlined, onTap: onCamera),
           const SizedBox(width: 18),
-
-          const Icon(Icons.image_outlined, size: 32),
+          _IconAction(icon: Icons.image_outlined, onTap: onGallery),
           const SizedBox(width: 18),
-
-          const Icon(Icons.folder_outlined, size: 32),
+          _IconAction(icon: Icons.folder_outlined, onTap: onFile),
           const SizedBox(width: 22),
           Expanded(
             child: TextField(
@@ -38,7 +44,7 @@ class ChatInput extends StatelessWidget {
               style: const TextStyle(fontSize: 20),
             ),
           ),
-          const Icon(Icons.mic_none, size: 36, color: Colors.black),
+          _IconAction(icon: Icons.mic_none, size: 36, onTap: onVoice),
           const SizedBox(width: 16),
           GestureDetector(
             onTap: onSend,
@@ -49,15 +55,27 @@ class ChatInput extends StatelessWidget {
                 color: AppColors.green,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.stop,
-                color: Colors.white,
-                size: 22,
-              ),
+              child: const Icon(Icons.stop, color: Colors.white, size: 22),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _IconAction extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  final VoidCallback? onTap;
+
+  const _IconAction({required this.icon, this.size = 32, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Icon(icon, size: size, color: Colors.black),
     );
   }
 }

@@ -1,16 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../main_navigation_screen.dart';
 import '../../core/constants/app_assets.dart';
+import '../../providers/auth_provider.dart';
 import 'register_screen.dart';
 import 'widgets/auth_button.dart';
 import 'widgets/auth_text_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController numeroController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool isPasswordHidden = true;
+
+  @override
+  void dispose() {
+    numeroController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    final auth = context.read<AuthProvider>();
+    final success = await auth.login(
+      numeroAMU: numeroController.text.trim(),
+      motDePasse: passwordController.text.trim(),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
+      );
+    } else if (auth.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(auth.errorMessage!),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       body: SafeArea(
@@ -22,13 +68,15 @@ class LoginScreen extends StatelessWidget {
               _logoHeader(),
               const SizedBox(height: 165),
 
-              _label('Email'),
+              _label('Numero AMU'),
               const SizedBox(height: 12),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 34),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 34),
                 child: AuthTextField(
-                  hintText: 'entrer votre E-mail',
-                  icon: Icons.email,
+                  controller: numeroController,
+                  hintText: 'AMU001',
+                  icon: Icons.badge_outlined,
+                  keyboardType: TextInputType.text,
                 ),
               ),
 
@@ -36,26 +84,34 @@ class LoginScreen extends StatelessWidget {
 
               _label('Mot de passe'),
               const SizedBox(height: 12),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 34),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 34),
                 child: AuthTextField(
+                  controller: passwordController,
                   hintText: '****************',
                   icon: Icons.lock,
-                  obscureText: true,
+                  obscureText: isPasswordHidden,
+                  onToggleVisibility: () {
+                    setState(() => isPasswordHidden = !isPasswordHidden);
+                  },
                 ),
               ),
 
               const SizedBox(height: 14),
 
-              const Padding(
-                padding: EdgeInsets.only(right: 42),
+              Padding(
+                padding: const EdgeInsets.only(right: 42),
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: Text(
-                    'Mot de passe oublié ?',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black87,
+                  child: GestureDetector(
+                    onTap: _showForgotPasswordHelp,
+                    child: const Text(
+                      'Mot de passe oublié ?',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -65,17 +121,9 @@ class LoginScreen extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 26),
-                child: AuthButton(
-                  label: 'Connexion',
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MainNavigationScreen(),
-                      ),
-                    );
-                  },
-                ),
+                child: auth.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : AuthButton(label: 'Connexion', onTap: _login),
               ),
 
               const SizedBox(height: 165),
@@ -122,9 +170,7 @@ class LoginScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const RegisterScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
                     );
                   },
                   child: const Text.rich(
@@ -132,10 +178,7 @@ class LoginScreen extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: 'Vous n’avez pas de compte? ',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                          ),
+                          style: TextStyle(color: Colors.black, fontSize: 18),
                         ),
                         TextSpan(
                           text: 'Inscrivez - vous',
@@ -163,11 +206,7 @@ class LoginScreen extends StatelessWidget {
       width: double.infinity,
       color: const Color(0xFF0067B1),
       child: Center(
-        child: Image.asset(
-          AppAssets.logo,
-          width: 330,
-          fit: BoxFit.contain,
-        ),
+        child: Image.asset(AppAssets.logo, width: 330, fit: BoxFit.contain),
       ),
     );
   }
@@ -194,14 +233,31 @@ class LoginScreen extends StatelessWidget {
           Expanded(child: Divider(color: Colors.black, thickness: 1)),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Ou Continuer avec',
-              style: TextStyle(fontSize: 20),
-            ),
+            child: Text('Ou Continuer avec', style: TextStyle(fontSize: 20)),
           ),
           Expanded(child: Divider(color: Colors.black, thickness: 1)),
         ],
       ),
+    );
+  }
+
+  void _showForgotPasswordHelp() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Mot de passe oublié'),
+          content: const Text(
+            'Pour les comptes de test, le mot de passe correspond souvent a la date de naissance au format JJMMAAAA.\n\nExemple : AMU001 / 14052000.\n\nSinon, contactez le support AMU pour reinitialiser votre acces.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

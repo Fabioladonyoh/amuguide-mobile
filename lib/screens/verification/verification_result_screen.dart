@@ -3,15 +3,13 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_assets.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/prestation.dart';
+import '../chatbot/chatbot_screen.dart';
 import 'widgets/verification_result_card.dart';
 
 class VerificationResultScreen extends StatelessWidget {
   final Prestation prestation;
 
-  const VerificationResultScreen({
-    super.key,
-    required this.prestation,
-  });
+  const VerificationResultScreen({super.key, required this.prestation});
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +17,24 @@ class VerificationResultScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 40),
           child: Column(
             children: [
               _header(context),
-              const SizedBox(height: 150),
+              const SizedBox(height: 72),
               VerificationResultCard(prestation: prestation),
-              const SizedBox(height: 105),
+              const SizedBox(height: 42),
               const Text(
                 'Besoin de plus d’informations ?',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 38),
+                style: TextStyle(fontSize: 20),
               ),
-              const SizedBox(height: 42),
+              const SizedBox(height: 18),
               const Text(
                 'Poser Une Question Au Chatbot',
-                style: TextStyle(fontSize: 30),
+                style: TextStyle(fontSize: 15),
               ),
-              const SizedBox(height: 42),
+              const SizedBox(height: 22),
               _chatbotButton(context),
             ],
           ),
@@ -46,29 +45,29 @@ class VerificationResultScreen extends StatelessWidget {
 
   Widget _header(BuildContext context) {
     return Container(
-      height: 110,
+      height: 74,
       color: const Color(0xFFF3F3F3),
-      padding: const EdgeInsets.symmetric(horizontal: 22),
+      padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, size: 38),
+            child: const Icon(Icons.arrow_back, size: 26),
           ),
           const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
               'Vérifier un soin',
-              style: TextStyle(fontSize: 28),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           const Spacer(),
-          const SizedBox(width: 38),
+          const SizedBox(width: 26),
         ],
       ),
     );
@@ -76,57 +75,65 @@ class VerificationResultScreen extends StatelessWidget {
 
   Widget _chatbotButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Container(
-        height: 110,
-        decoration: BoxDecoration(
-          color: AppColors.blue,
-          borderRadius: BorderRadius.circular(55),
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 24),
-            Container(
-              width: 76,
-              height: 76,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Image.asset(
-                  AppAssets.chatbotSmall,
-                  width: 38,
-                  height: 38,
-                ),
-              ),
-            ),
-            const SizedBox(width: 18),
-            const Expanded(
-              child: Text(
-                'Posez Votre Question Au\nChatbot',
-                style: TextStyle(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+          );
+        },
+        child: Container(
+          height: 54,
+          decoration: BoxDecoration(
+            color: AppColors.blue,
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 10),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: const BoxDecoration(
                   color: Colors.white,
-                  fontSize: 24,
-                  height: 1.1,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Image.asset(
+                    AppAssets.chatbotSmall,
+                    width: 22,
+                    height: 22,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              width: 76,
-              height: 76,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  'Posez Votre Question Au\nChatbot',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    height: 1.1,
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.keyboard_double_arrow_right,
-                color: AppColors.blue,
-                size: 34,
+              Container(
+                width: 42,
+                height: 42,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.keyboard_double_arrow_right,
+                  color: AppColors.blue,
+                  size: 24,
+                ),
               ),
-            ),
-            const SizedBox(width: 24),
-          ],
+              const SizedBox(width: 10),
+            ],
+          ),
         ),
       ),
     );

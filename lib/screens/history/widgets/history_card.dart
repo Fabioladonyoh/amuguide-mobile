@@ -14,12 +14,12 @@ class HistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(26, 36, 26, 22),
+      padding: const EdgeInsets.fromLTRB(22, 22, 22, 16),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.black, width: 1.4),
-          bottom: BorderSide(color: Colors.black, width: 1.4),
+          top: BorderSide(color: Colors.black54, width: 1),
+          bottom: BorderSide(color: Colors.black54, width: 1),
         ),
       ),
       child: Column(
