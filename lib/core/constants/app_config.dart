@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 class AppConfig {
   static String get baseUrl {
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:8081/api';
+      return 'http://10.0.2.2:8082/api';
     }
 
-    return 'http://localhost:8081/api';
+    return 'http://localhost:8082/api';
   }
 
   static const String verificationSearch = '/verifications/search';
